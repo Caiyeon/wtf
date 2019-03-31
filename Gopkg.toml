@@ -105,3 +105,7 @@
 [[constraint]]
   name = "github.com/shirou/gopsutil"
   version = "2.18.10"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/benmatselby/go-azuredevops"

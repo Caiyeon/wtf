@@ -91,6 +91,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:d6c8b766f8f1941b16a77262dcbeaaaffee96f558c4281a65459eb70aa9abbc3"
+  name = "github.com/benmatselby/go-azuredevops"
+  packages = ["azuredevops"]
+  pruneopts = "UT"
+  revision = "377e9ee9d93d363fda4c2421f8c234f1ac848136"
+
+[[projects]]
+  branch = "master"
   digest = "1:6d7646b01dbbacd8c50be0cbddbcb633619f819e51f47a4114c8d4518ae7ac02"
   name = "github.com/briandowns/openweathermap"
   packages = ["."]
@@ -444,6 +452,7 @@
     "github.com/alecthomas/chroma/lexers",
     "github.com/alecthomas/chroma/styles",
     "github.com/andygrunwald/go-gerrit",
+    "github.com/benmatselby/go-azuredevops/azuredevops",
     "github.com/briandowns/openweathermap",
     "github.com/darkSasori/todoist",
     "github.com/dustin/go-humanize",
