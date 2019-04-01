@@ -20,13 +20,13 @@ func (widget *Widget) display() {
 	widget.View.SetTitle(widget.ContextualTitle(fmt.Sprintf("%s - %s", widget.Name, repo.Repo.Name)))
 
 	str := ""
-	str = str + " [red]My Pull Requests[white]\n"
+	str = str + " [red]Created by me[white]\n"
 	str = str + widget.displayMyCreatedPullRequests(*repo)
 	str = str + "\n"
-	str = str + " [red]Review Requested[white]\n"
+	str = str + " [red]Assigned to me[white]\n"
 	str = str + widget.displayMyReviewedPullRequests(*repo)
 	str = str + "\n"
-	str = str + " [red]Open Pull Requests[white]\n"
+	str = str + " [red]Other Open Pull Requests[white]\n"
 	str = str + widget.displayOpenPullRequests(*repo)
 	str = str + "\n"
 
