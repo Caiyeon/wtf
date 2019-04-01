@@ -40,22 +40,18 @@ func displayInProgressWorkItems(items []WorkItem) string {
 		return " [grey]none[white]\n"
 	}
 
+	displayName := wtf.Config.UBool("wtf.mods.azuredevopsworkitems.displayName")
+
 	str := ""
-	if wtf.Config.UBool("wtf.mods.azuredevopsworkitems.displayName") {
-		for _, item := range items {
-			if item.Fields.State == "In Progress" {
-				str = str + fmt.Sprintf(" [yellow]%s[white] [green]%7d[white] [orange]%s[white] %s\n",
-					item.Fields.WorkItemType, item.ID, item.Fields.AssignedTo.DisplayName, tview.Escape(item.Fields.Title),
-				)
+	for _, item := range items {
+		if item.Fields.State == "In Progress" {
+			str = str + fmt.Sprintf(" [green]%7d[white] [yellow]%s[white] ",
+				item.ID, item.Fields.WorkItemType,
+			)
+			if displayName {
+				str = str + fmt.Sprintf("[lightsalmon]%s[white] ", item.Fields.AssignedTo.DisplayName)
 			}
-		}
-	} else {
-		for _, item := range items {
-			if item.Fields.State == "In Progress" {
-				str = str + fmt.Sprintf(" [yellow]%s[white] [green]%7d[white] %s\n",
-					item.Fields.WorkItemType, item.ID, tview.Escape(item.Fields.Title),
-				)
-			}
+			str = str + tview.Escape(item.Fields.Title) + "\n"
 		}
 	}
 
@@ -67,22 +63,18 @@ func displayToDoWorkItems(items []WorkItem) string {
 		return " [grey]none[white]\n"
 	}
 
+	displayName := wtf.Config.UBool("wtf.mods.azuredevopsworkitems.displayName")
+
 	str := ""
-	if wtf.Config.UBool("wtf.mods.azuredevopsworkitems.displayName") {
-		for _, item := range items {
-			if item.Fields.State == "To Do" {
-				str = str + fmt.Sprintf(" [yellow]%s[white] [green]%7d[white] [orange]%s[white] %s\n",
-					item.Fields.WorkItemType, item.ID, item.Fields.AssignedTo.DisplayName, tview.Escape(item.Fields.Title),
-				)
+	for _, item := range items {
+		if item.Fields.State == "To Do" {
+			str = str + fmt.Sprintf(" [green]%7d[white] [yellow]%s[white] ",
+				item.ID, item.Fields.WorkItemType,
+			)
+			if displayName {
+				str = str + fmt.Sprintf("[lightsalmon]%s[white] ", item.Fields.AssignedTo.DisplayName)
 			}
-		}
-	} else {
-		for _, item := range items {
-			if item.Fields.State == "To Do" {
-				str = str + fmt.Sprintf(" [yellow]%s[white] [green]%7d[white] %s\n",
-					item.Fields.WorkItemType, item.ID, tview.Escape(item.Fields.Title),
-				)
-			}
+			str = str + tview.Escape(item.Fields.Title) + "\n"
 		}
 	}
 
@@ -94,22 +86,18 @@ func displayOtherWorkItems(items []WorkItem) string {
 		return " [grey]none[white]\n"
 	}
 
+	displayName := wtf.Config.UBool("wtf.mods.azuredevopsworkitems.displayName")
+
 	str := ""
-	if wtf.Config.UBool("wtf.mods.azuredevopsworkitems.displayName") {
-		for _, item := range items {
-			if item.Fields.State != "In Progress" && item.Fields.State != "To Do" {
-				str = str + fmt.Sprintf(" [orange]%s[white] [yellow]%s[white] [green]%7d[white] [lightsalmon]%s[white] %s\n",
-					item.Fields.State, item.Fields.WorkItemType, item.ID, item.Fields.AssignedTo.DisplayName, tview.Escape(item.Fields.Title),
-				)
+	for _, item := range items {
+		if item.Fields.State != "In Progress" && item.Fields.State != "To Do" {
+			str = str + fmt.Sprintf(" [green]%7d[white] [yellow]%s[white] [orange]%s[white] ",
+				item.ID, item.Fields.WorkItemType, item.Fields.State,
+			)
+			if displayName {
+				str = str + fmt.Sprintf("[lightsalmon]%s[white] ", item.Fields.AssignedTo.DisplayName)
 			}
-		}
-	} else {
-		for _, item := range items {
-			if item.Fields.State != "In Progress" && item.Fields.State != "To Do" {
-				str = str + fmt.Sprintf(" [orange]%s[white] [yellow]%s[white] [green]%7d[white] %s\n",
-					item.Fields.State, item.Fields.WorkItemType, item.ID, tview.Escape(item.Fields.Title),
-				)
-			}
+			str = str + tview.Escape(item.Fields.Title) + "\n"
 		}
 	}
 
