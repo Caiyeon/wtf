@@ -20,6 +20,7 @@ import (
 	"github.com/wtfutil/wtf/cfg"
 	"github.com/wtfutil/wtf/flags"
 	"github.com/wtfutil/wtf/logger"
+	"github.com/wtfutil/wtf/modules/azuredevopsworkitems"
 	"github.com/wtfutil/wtf/modules/azuredevopsrepo"
 	"github.com/wtfutil/wtf/modules/bamboohr"
 	"github.com/wtfutil/wtf/modules/circleci"
@@ -178,6 +179,8 @@ func addWidget(app *tview.Application, pages *tview.Pages, widgetName string) {
 	switch widgetName {
 	case "azuredevopsrepo":
 		widgets = append(widgets, azuredevopsrepo.NewWidget(app))
+	case "azuredevopsworkitems":
+		widgets = append(widgets, azuredevopsworkitems.NewWidget(app))
 	case "bamboohr":
 		widgets = append(widgets, bamboohr.NewWidget(app))
 	case "bargraph":
