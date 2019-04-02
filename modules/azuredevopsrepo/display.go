@@ -46,7 +46,7 @@ func (widget *Widget) displayMyCreatedPullRequests(repo AzureDevopsRepo) string 
 	str := ""
 	for _, pr := range prs {
 		if containsUser(widget.User, pr.CreatedBy) {
-			str = str + fmt.Sprintf(" [green]%4d[white] %s\n", pr.ID, tview.Escape(pr.Title))
+			str = str + fmt.Sprintf(" [green]%4d[white] %s %s\n", pr.ID, reviewString(pr), tview.Escape(pr.Title))
 		}
 	}
 
@@ -64,11 +64,12 @@ func (widget *Widget) displayMyReviewedPullRequests(repo AzureDevopsRepo) string
 	for _, pr := range prs {
 		if containsUser(widget.User, pr.Reviewers...) {
 			timeClr, timeString := prTimeString(pr)
-			str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
+			str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s %s\n",
 				pr.ID,
 				strings.Split(pr.CreatedBy.DisplayName, " ")[0],
 				timeClr,
 				timeString,
+				reviewString(pr),
 				tview.Escape(pr.Title),
 			)
 		}
@@ -87,11 +88,12 @@ func (widget *Widget) displayOpenPullRequests(repo AzureDevopsRepo) string {
 	str := ""
 	for _, pr := range prs {
 		timeClr, timeString := prTimeString(pr)
-		str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
+		str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s %s\n",
 			pr.ID,
 			strings.Split(pr.CreatedBy.DisplayName, " ")[0],
 			timeClr,
 			timeString,
+			reviewString(pr),
 			tview.Escape(pr.Title),
 		)
 	}
@@ -112,4 +114,20 @@ func prTimeString(pr PullRequest) (string, string) {
 	} else {
 		return "[grey]", t.Format("Jan 02")
 	}
+}
+
+func reviewString(pr PullRequest) string {
+	s := ""
+	for _, reviewer := range pr.Reviewers {
+		if !reviewer.IsContainer {
+			if reviewer.Vote == 10 || reviewer.Vote == 5 {
+				s = s + "[green]✓[white]"
+			}
+			if reviewer.Vote == -10 || reviewer.Vote == -5 {
+				s = s + "[orange]✗[white]"
+			}
+		}
+	}
+	s = "|" + s + "|"
+	return s
 }

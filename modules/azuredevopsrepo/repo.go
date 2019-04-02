@@ -37,10 +37,12 @@ type PullRequest struct {
 }
 
 type User struct {
-	Vote        int    `json:"vote,omitempty"`
-	ID          string `json:"id"`
-	DisplayName string `json:"displayName"`
-	UniqueName  string `json:"uniqueName"`
+	Vote          int    `json:"vote,omitempty"`
+	ID            string `json:"id"`
+	DisplayName   string `json:"displayName"`
+	UniqueName    string `json:"uniqueName"`
+	IsAadIdentity bool   `json:"isAadIdentity"`
+	IsContainer   bool   `json:"isContainer"`
 }
 
 func NewRepo(repoName string) (r *AzureDevopsRepo) {
