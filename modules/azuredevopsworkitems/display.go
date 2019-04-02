@@ -44,7 +44,7 @@ func displayInProgressWorkItems(items []WorkItem) string {
 
 	str := ""
 	for _, item := range items {
-		if item.Fields.State == "In Progress" {
+		if item.Fields.State == "In Progress" || item.Fields.State == "Committed" {
 			str = str + fmt.Sprintf(" [green]%7d[white] [yellow]%s[white] ",
 				item.ID, item.Fields.WorkItemType,
 			)
@@ -90,7 +90,7 @@ func displayOtherWorkItems(items []WorkItem) string {
 
 	str := ""
 	for _, item := range items {
-		if item.Fields.State != "In Progress" && item.Fields.State != "To Do" {
+		if itemIsOther(item) {
 			str = str + fmt.Sprintf(" [green]%7d[white] [yellow]%s[white] [orange]%s[white] ",
 				item.ID, item.Fields.WorkItemType, item.Fields.State,
 			)
@@ -102,4 +102,22 @@ func displayOtherWorkItems(items []WorkItem) string {
 	}
 
 	return str
+}
+
+func itemIsOther(item WorkItem) bool {
+	notOther := []string{
+		"In Progress",
+		"To Do",
+		"Done",
+		"Removed",
+		"Committed",
+	}
+
+	for _, s := range notOther {
+		if item.Fields.State == s {
+			return false
+		}
+	}
+
+	return true
 }
