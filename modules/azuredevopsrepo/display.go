@@ -2,6 +2,8 @@ package azuredevopsrepo
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/rivo/tview"
 )
@@ -61,7 +63,14 @@ func (widget *Widget) displayMyReviewedPullRequests(repo AzureDevopsRepo) string
 	str := ""
 	for _, pr := range prs {
 		if containsUser(widget.User, pr.Reviewers...) {
-			str = str + fmt.Sprintf(" [green]%4d[white] %s\n", pr.ID, tview.Escape(pr.Title))
+			timeClr, timeString := prTimeString(pr)
+			str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
+				pr.ID,
+				strings.Split(pr.CreatedBy.DisplayName, " ")[0],
+				timeClr,
+				timeString,
+				tview.Escape(pr.Title),
+			)
 		}
 	}
 
@@ -77,8 +86,30 @@ func (widget *Widget) displayOpenPullRequests(repo AzureDevopsRepo) string {
 
 	str := ""
 	for _, pr := range prs {
-		str = str + fmt.Sprintf(" [green]%4d[white] %s\n", pr.ID, tview.Escape(pr.Title))
+		timeClr, timeString := prTimeString(pr)
+		str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
+			pr.ID,
+			strings.Split(pr.CreatedBy.DisplayName, " ")[0],
+			timeClr,
+			timeString,
+			tview.Escape(pr.Title),
+		)
 	}
 
 	return str
+}
+
+func prTimeString(pr PullRequest) (string, string) {
+	t, err := time.Parse(time.RFC3339Nano, pr.Created)
+	if err != nil {
+		return "", ""
+	}
+
+	if time.Since(t) < 1*time.Hour {
+		return "[orange]", fmt.Sprintf("%.0fm ago", time.Since(t).Minutes())
+	} else if time.Since(t) < 24*time.Hour {
+		return "[orange]", fmt.Sprintf("%.0fh ago", time.Since(t).Hours())
+	} else {
+		return "[grey]", t.Format("Jan 02")
+	}
 }
