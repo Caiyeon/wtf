@@ -86,7 +86,7 @@ func timeString(b Build) (string, string) {
 		return "[grey]", t.Format(time.Kitchen)
 
 	default:
-		return "Pending", ""
+		return "[grey]", "--:--"
 	}
 }
 
@@ -114,5 +114,5 @@ func progressString(b Build) (string, string) {
 		return "[grey]", "None"
 	}
 
-	return "", ""
+	return "[grey]", "Pending"
 }
