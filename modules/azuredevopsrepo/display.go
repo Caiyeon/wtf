@@ -64,12 +64,11 @@ func (widget *Widget) displayMyReviewedPullRequests(repo AzureDevopsRepo) string
 	for _, pr := range prs {
 		if containsUser(widget.User, pr.Reviewers...) {
 			timeClr, timeString := prTimeString(pr)
-			str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s %s\n",
+			str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
 				pr.ID,
 				strings.Split(pr.CreatedBy.DisplayName, " ")[0],
 				timeClr,
 				timeString,
-				reviewString(pr),
 				tview.Escape(pr.Title),
 			)
 		}
@@ -88,12 +87,11 @@ func (widget *Widget) displayOpenPullRequests(repo AzureDevopsRepo) string {
 	str := ""
 	for _, pr := range prs {
 		timeClr, timeString := prTimeString(pr)
-		str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s %s\n",
+		str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
 			pr.ID,
 			strings.Split(pr.CreatedBy.DisplayName, " ")[0],
 			timeClr,
 			timeString,
-			reviewString(pr),
 			tview.Escape(pr.Title),
 		)
 	}
