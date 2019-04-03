@@ -179,7 +179,7 @@ func addWidget(app *tview.Application, pages *tview.Pages, widgetName string) {
 	// Always in alphabetical order
 	switch widgetName {
 	case "azuredevopsrepo":
-		widgets = append(widgets, azuredevopsrepo.NewWidget(app))
+		widgets = append(widgets, azuredevopsrepo.NewWidget(app, pages))
 	case "azuredevopsworkitems":
 		widgets = append(widgets, azuredevopsworkitems.NewWidget(app))
 	case "azuredevopsbuilds":

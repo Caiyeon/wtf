@@ -21,22 +21,24 @@ func (widget *Widget) display() {
 
 	widget.View.SetTitle(widget.ContextualTitle(fmt.Sprintf("%s - %s", widget.Name, repo.Repo.Name)))
 
+	prCounter := 0
+
 	str := ""
 	str = str + " [red]Created by me[white]\n"
-	str = str + widget.displayMyCreatedPullRequests(*repo)
+	str = str + widget.displayMyCreatedPullRequests(*repo, &prCounter)
 	str = str + "\n"
 	str = str + " [red]Assigned to me[white]\n"
-	str = str + widget.displayMyReviewedPullRequests(*repo)
+	str = str + widget.displayMyReviewedPullRequests(*repo, &prCounter)
 	str = str + "\n"
 	str = str + " [red]Other Open Pull Requests[white]\n"
-	str = str + widget.displayOpenPullRequests(*repo)
+	str = str + widget.displayOpenPullRequests(*repo, &prCounter)
 	str = str + "\n"
 
 	widget.View.SetText(str)
 	return
 }
 
-func (widget *Widget) displayMyCreatedPullRequests(repo AzureDevopsRepo) string {
+func (widget *Widget) displayMyCreatedPullRequests(repo AzureDevopsRepo, prCounter *int) string {
 	prs := repo.PullRequests
 
 	if len(prs) == 0 {
@@ -45,15 +47,28 @@ func (widget *Widget) displayMyCreatedPullRequests(repo AzureDevopsRepo) string 
 
 	str := ""
 	for _, pr := range prs {
+		if *prCounter == widget.maxDisplayedPRs {
+			return str
+		}
+
 		if containsUser(widget.User, pr.CreatedBy) {
-			str = str + fmt.Sprintf(" [green]%4d[white] %s %s\n", pr.ID, reviewString(pr), tview.Escape(pr.Title))
+			if pr.ID == widget.SelectedPR.ID {
+				str = str + fmt.Sprintf(" [green]%4d[white] %s [yellow]%s[white]\n", pr.ID, prVoteString(pr), tview.Escape(pr.Title))
+			}
+			if *prCounter == widget.SelectedIndex {
+				widget.SelectedPR = pr
+				str = str + fmt.Sprintf(" [green]%4d[white] %s [yellow]%s[white]\n", pr.ID, prVoteString(pr), tview.Escape(pr.Title))
+			} else {
+				str = str + fmt.Sprintf(" [green]%4d[white] %s %s\n", pr.ID, prVoteString(pr), tview.Escape(pr.Title))
+			}
+			*prCounter++
 		}
 	}
 
 	return str
 }
 
-func (widget *Widget) displayMyReviewedPullRequests(repo AzureDevopsRepo) string {
+func (widget *Widget) displayMyReviewedPullRequests(repo AzureDevopsRepo, prCounter *int) string {
 	prs := repo.PullRequests
 
 	if len(prs) == 0 {
@@ -62,8 +77,63 @@ func (widget *Widget) displayMyReviewedPullRequests(repo AzureDevopsRepo) string
 
 	str := ""
 	for _, pr := range prs {
+		if *prCounter == widget.maxDisplayedPRs {
+			return str
+		}
+
 		if containsUser(widget.User, pr.Reviewers...) {
 			timeClr, timeString := prTimeString(pr)
+
+			if *prCounter == widget.SelectedIndex {
+				widget.SelectedPR = pr
+				str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] [yellow]%s[yellow]\n",
+					pr.ID,
+					strings.Split(pr.CreatedBy.DisplayName, " ")[0],
+					timeClr,
+					timeString,
+					tview.Escape(pr.Title),
+				)
+			} else {
+				str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
+					pr.ID,
+					strings.Split(pr.CreatedBy.DisplayName, " ")[0],
+					timeClr,
+					timeString,
+					tview.Escape(pr.Title),
+				)
+			}
+			*prCounter++
+		}
+	}
+
+	return str
+}
+
+func (widget *Widget) displayOpenPullRequests(repo AzureDevopsRepo, prCounter *int) string {
+	prs := repo.PullRequests
+
+	if len(prs) == 0 {
+		return " [grey]none[white]\n"
+	}
+
+	str := ""
+	for _, pr := range prs {
+		if *prCounter == widget.maxDisplayedPRs {
+			return str
+		}
+
+		timeClr, timeString := prTimeString(pr)
+
+		if *prCounter == widget.SelectedIndex {
+			widget.SelectedPR = pr
+			str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] [yellow]%s[white]\n",
+				pr.ID,
+				strings.Split(pr.CreatedBy.DisplayName, " ")[0],
+				timeClr,
+				timeString,
+				tview.Escape(pr.Title),
+			)
+		} else {
 			str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
 				pr.ID,
 				strings.Split(pr.CreatedBy.DisplayName, " ")[0],
@@ -72,28 +142,7 @@ func (widget *Widget) displayMyReviewedPullRequests(repo AzureDevopsRepo) string
 				tview.Escape(pr.Title),
 			)
 		}
-	}
-
-	return str
-}
-
-func (widget *Widget) displayOpenPullRequests(repo AzureDevopsRepo) string {
-	prs := repo.PullRequests
-
-	if len(prs) == 0 {
-		return " [grey]none[white]\n"
-	}
-
-	str := ""
-	for _, pr := range prs {
-		timeClr, timeString := prTimeString(pr)
-		str = str + fmt.Sprintf(" [green]%4d[white] [lightsalmon]%-8s[white] %s%7s[white] %s\n",
-			pr.ID,
-			strings.Split(pr.CreatedBy.DisplayName, " ")[0],
-			timeClr,
-			timeString,
-			tview.Escape(pr.Title),
-		)
+		*prCounter++
 	}
 
 	return str
@@ -114,7 +163,7 @@ func prTimeString(pr PullRequest) (string, string) {
 	}
 }
 
-func reviewString(pr PullRequest) string {
+func prVoteString(pr PullRequest) string {
 	s := ""
 	for _, reviewer := range pr.Reviewers {
 		if !reviewer.IsContainer {

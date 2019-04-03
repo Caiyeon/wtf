@@ -11,7 +11,7 @@ import (
 
 type AzureDevopsRepo struct {
 	client       *az.Client
-	Repo         az.Repository
+	Repo         Repository
 	PullRequests []PullRequest
 
 	// if an operation resulted in an error, it should be stored here
@@ -33,7 +33,22 @@ type PullRequest struct {
 	CreatedBy   User               `json:"createdBy"`
 	Repo        az.PullRequestRepo `json:"repository"`
 	URL         string             `json:"url"`
+	RemoteURL   string             `json:"remoteUrl"`
 	Reviewers   []User             `json:"reviewers"`
+}
+
+// Repository represents a repository used by a build definition
+type Repository struct {
+	ID                 string                 `json:"id,omitempty"`
+	Type               string                 `json:"type,omitempty"`
+	Name               string                 `json:"name,omitempty"`
+	URL                string                 `json:"url,omitempty"`
+	RootFolder         string                 `json:"root_folder"`
+	Properties         map[string]interface{} `json:"properties"`
+	Clean              string                 `json:"clean"`
+	DefaultBranch      string                 `json:"default_branch"`
+	CheckoutSubmodules bool                   `json:"checkout_submodules"`
+	RemoteUrl          string                 `json:"remoteUrl"`
 }
 
 type User struct {
@@ -54,7 +69,7 @@ func NewRepo(repoName string) (r *AzureDevopsRepo) {
 		url.PathEscape(repoName),
 	)
 
-	var azrepo az.Repository
+	var azrepo Repository
 	request, err := r.client.NewRequest("GET", URL, nil)
 	if err != nil {
 		r.err = err
