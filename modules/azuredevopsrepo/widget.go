@@ -81,9 +81,11 @@ func (widget *Widget) Next() {
 /* -------------------- Unexported Functions -------------------- */
 
 func (widget *Widget) openSelectedPR() {
+	URL := widget.Repo.Repo.RemoteUrl + "/pullrequest"
 	if widget.SelectedIndex != -1 {
-		wtf.OpenFile(widget.Repo.Repo.RemoteUrl + "/pullrequest/" + strconv.Itoa(widget.SelectedPR.ID))
+		URL = URL + "/" + strconv.Itoa(widget.SelectedPR.ID)
 	}
+	wtf.OpenFile(URL)
 }
 
 func (widget *Widget) doneFunc(event tcell.Key) {
