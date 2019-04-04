@@ -91,8 +91,7 @@ func (widget *Widget) openSelectedPR() {
 func (widget *Widget) doneFunc(event tcell.Key) {
 	widget.SelectedIndex = -1
 	widget.SelectedPR = PullRequest{}
-	widget.View.SetText("doneeee")
-	// widget.display()
+	widget.display()
 }
 
 func (widget *Widget) keyboardIntercept(event *tcell.EventKey) *tcell.EventKey {
