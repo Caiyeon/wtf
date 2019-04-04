@@ -13,8 +13,17 @@ func (widget *Widget) display() {
 		widget.View.SetText(" Azure devops data is unavailable")
 		return
 	}
+
+	widget.View.SetWrap(false)
+	widget.View.SetWordWrap(false)
+
 	if azureWorkItems.err != nil {
+		widget.View.SetWrap(true)
+		widget.View.SetWordWrap(true)
 		widget.View.SetText(" " + azureWorkItems.err.Error())
+
+		// reset err so that refresh can work again
+		azureWorkItems.err = nil
 		return
 	}
 
