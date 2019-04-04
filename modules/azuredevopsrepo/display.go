@@ -52,9 +52,6 @@ func (widget *Widget) displayMyCreatedPullRequests(repo AzureDevopsRepo, prCount
 		}
 
 		if containsUser(widget.User, pr.CreatedBy) {
-			if pr.ID == widget.SelectedPR.ID {
-				str = str + fmt.Sprintf(" [green]%4d[white] %s [yellow]%s[white]\n", pr.ID, prVoteString(pr), tview.Escape(pr.Title))
-			}
 			if *prCounter == widget.SelectedIndex {
 				widget.SelectedPR = pr
 				str = str + fmt.Sprintf(" [green]%4d[white] %s [yellow]%s[white]\n", pr.ID, prVoteString(pr), tview.Escape(pr.Title))
